@@ -1,0 +1,41 @@
+Howto install camunda BPM MySQL database
+----------------------------------------
+
+1. Download MySQL java connector e.g. mysql-connector-java-5.1.28.jar from http://mvnrepository.com/artifact/mysql/mysql-connector-java
+
+2. Add mysql-connector-java-VERSION.jar to the Apache Tomcat 7 lib/ folder
+
+3. Create camunda BPM 7.0.0-Final MySQL database and tables as described here in chapter 1: https://groups.google.com/forum/#!msg/camunda-bpm-users/O8dpppcvwt8/MXFGeGW8wxoJ
+
+4. Insert camunda BPM sample user (required for camunda REST API HTTP Basic Authentication):
+
+-- Groups
+INSERT INTO act_id_group (id_, rev_, name_, type_) VALUES ('accounting', '1', 'Accounting', 'WORKFLOW');
+INSERT INTO act_id_group (id_, rev_, name_, type_) VALUES ('camunda-admin', '1', 'camunda BPM Administrators', 'SYSTEM');
+INSERT INTO act_id_group (id_, rev_, name_, type_) VALUES ('management', '1', 'Management', 'WORKFLOW');
+INSERT INTO act_id_group (id_, rev_, name_, type_) VALUES ('sales', '1', 'Sales', 'WORKFLOW');
+
+-- Users
+INSERT INTO act_id_user (id_, rev_, first_, last_, email_, pwd_, picture_id_) VALUES ('demo', '1', 'Demo', 'Demo', 'demo@camunda.org', '{SHA}ieSV55Qc+eQOaYDRSha/AjzNTJE=', NULL);
+
+-- Memberships
+INSERT INTO act_id_membership (user_id_, group_id_) VALUES ('demo', 'accounting');
+INSERT INTO act_id_membership (user_id_, group_id_) VALUES ('demo', 'camunda-admin');
+INSERT INTO act_id_membership (user_id_, group_id_) VALUES ('demo', 'management');
+INSERT INTO act_id_membership (user_id_, group_id_) VALUES ('demo', 'sales');
+
+
+5. Add JNDI resource to Apache Tomcat 7 config/context.xml file:
+
+<Context antiJARLocking="true" antiResourceLocking="true"> 
+
+    ...
+
+    <Resource name="jdbc/CamundaBpmDb" auth="Container" type="javax.sql.DataSource"
+              maxActive="100" maxIdle="30" maxWait="10000"
+              username="camundabpm" password="MYSECRETPW" driverClassName="com.mysql.jdbc.Driver"
+              url="jdbc:mysql://localhost:3306/camundabpm"/>
+
+    ...
+
+</Context>

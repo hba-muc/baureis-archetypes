@@ -1,0 +1,16 @@
+Howto deploy the web application
+--------------------------------
+
+1. Download Apache Tomcat 7 e.g. from: http://archive.apache.org/dist/tomcat/tomcat-7/v7.0.47/bin/
+
+2. Install Apache Tomcat 7 
+
+3. Install camunda BPM MySQL database as described in "howto-install-mysql-db.txt"
+
+4. Start up Apache Tomcat 7 (e.g. on windows run: bin\startup.bat)
+
+5. Call "mvn clean install" to create the web application 
+
+5. Deploy the web application to Apache Tomcat 7
+
+6. Call "GET http://demo:demo@localhost:8080/YOUR-APPLICATION-NAME/engine" -> returns [{"name":"default"}]
