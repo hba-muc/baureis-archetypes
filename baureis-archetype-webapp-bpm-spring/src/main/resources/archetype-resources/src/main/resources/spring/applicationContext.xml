@@ -1,0 +1,93 @@
+<?xml  version="1.0"  encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+  xmlns:jdbc="http://www.springframework.org/schema/jdbc" xmlns:aop="http://www.springframework.org/schema/aop"
+  xmlns:tx="http://www.springframework.org/schema/tx" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:context="http://www.springframework.org/schema/context" xmlns:jee="http://www.springframework.org/schema/jee"
+  xsi:schemaLocation="
+    http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa.xsd
+    http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd
+    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+    http://www.springframework.org/schema/aop http://www.springframework.org/schema/tx/spring-aop.xsd
+    http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee.xsd ">
+
+  <context:annotation-config />
+
+  <!-- Enable handling of java.util.logging through SLF4J -->
+  <bean id="slf4JBridgeHandler" class="org.slf4j.bridge.SLF4JBridgeHandler" init-method="removeHandlersForRootLogger" />
+  <bean class="org.slf4j.bridge.SLF4JBridgeHandler" init-method="install" depends-on="slf4JBridgeHandler" />
+
+  <bean class="${package}.bpm.Starter" />
+  <bean id="sampleServiceTaskDelegate" class="${package}.bpm.task.SampleServiceTaskDelegate" />
+
+  <jpa:repositories base-package="${package}" />
+
+  <tx:annotation-driven transaction-manager="transactionManager" />
+
+  <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+    <property name="dataSource" ref="dataSource" />
+    <property name="persistenceUnitName" value="${entitymanagerfactory.persistenceunitname}" />
+    <property name="jpaVendorAdapter">
+      <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+        <property name="databasePlatform" value="${hibernate.dialect}" />
+        <property name="generateDdl" value="${entitymanagerfactory.jpavendoradapter.generateddl}" />
+        <property name="showSql" value="${entitymanagerfactory.jpavendoradapter.showsql}" />
+      </bean>
+    </property>
+    <property name="packagesToScan">
+      <list>
+        <value>persistence.entity</value>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+    <property name="entityManagerFactory" ref="entityManagerFactory" />
+  </bean>
+
+  <bean id="processEngineConfiguration" class="org.camunda.bpm.engine.spring.SpringProcessEngineConfiguration">
+    <property name="processEngineName" value="default" />
+    <property name="dataSource" ref="dataSource" />
+    <property name="transactionManager" ref="transactionManager" />
+    <property name="databaseSchemaUpdate" value="${processengine.configuration.databaseSchemaUpdate}" />
+    <property name="jobExecutorActivate" value="${processengine.configuration.jobExecutorActivate}" />
+    <property name="history" value="full" />
+    <property name="deploymentResources" value="classpath*:diagram/*.bpmn" />
+  </bean>
+
+  <bean id="processEngine" class="org.camunda.bpm.engine.spring.ProcessEngineFactoryBean">
+    <property name="processEngineConfiguration" ref="processEngineConfiguration" />
+  </bean>
+
+  <bean id="repositoryService" factory-bean="processEngine" factory-method="getRepositoryService" />
+  <bean id="runtimeService" factory-bean="processEngine" factory-method="getRuntimeService" />
+  <bean id="taskService" factory-bean="processEngine" factory-method="getTaskService" />
+  <bean id="historyService" factory-bean="processEngine" factory-method="getHistoryService" />
+  <bean id="managementService" factory-bean="processEngine" factory-method="getManagementService" />
+
+  <beans profile="live">
+    <context:property-placeholder location="classpath*:config/application.properties" />
+
+    <jee:jndi-lookup id="dataSource" jndi-name="java:comp/env/${datasource.jndiName}" />
+  </beans>
+
+  <beans profile="test">
+    <context:property-placeholder location="classpath*:config/application.test.properties" />
+
+    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+      <property name="driverClassName" value="${datasource.driver}" />
+      <property name="url" value="${datasource.url}" />
+      <property name="username" value="${datasource.username}" />
+      <property name="password" value="${datasource.password}" />
+    </bean>
+
+    <jdbc:initialize-database data-source="dataSource">
+      <jdbc:script location="classpath*:sql/camunda-bpm-users.sql" />
+    </jdbc:initialize-database>
+
+    <bean id="processEngineRule" class="org.camunda.bpm.engine.test.ProcessEngineRule">
+      <property name="processEngine" ref="processEngine" />
+    </bean>
+  </beans>
+</beans>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration debug="false">
+  <appender name="${artifactId}-test-appender" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>%-4relative [%thread] %-5level %logger{35} - %msg %n</pattern>
+    </encoder>
+  </appender>
+  
+  <!--logger name="org.camunda" level="DEBUG" /-->
+	
+  <!-- root logger setup -->
+  <root level="INFO">
+    <appender-ref ref="${artifactId}-test-appender" />
+  </root>
+</configuration>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration debug="false">
+  <appender name="${artifactId}-appender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>./logs/${artifactId}.log</file>
+    <append>true</append>
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      <fileNamePattern>./logs/${artifactId}.log.%d{yyyyMMdd}-%d{HHmmss,aux}</fileNamePattern>
+    </rollingPolicy>
+    <encoder>
+      <pattern>%d [%thread] %-5level %logger{35} - %msg%n</pattern>
+      <!-- <pattern>%d{ISO8601} [%thread] %level %X{GURID} %X{SESSIONINFO} - %msg%n</pattern> -->
+    </encoder>
+  </appender>
+
+  <!-- root logger setup -->
+  <root level="INFO">
+    <appender-ref ref="${artifactId}-appender" />
+  </root>
+</configuration>
