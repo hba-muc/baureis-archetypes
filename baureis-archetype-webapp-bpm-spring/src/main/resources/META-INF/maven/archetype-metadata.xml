@@ -69,9 +69,7 @@
     <fileSet filtered="true" encoding="UTF-8">
       <directory></directory>
       <includes>
-        <include>readme.txt</include>
-        <include>build.xml</include>
-        <include>build.properties.example</include>
+        <include>*.txt</include>
       </includes>
     </fileSet>
   </fileSets>
