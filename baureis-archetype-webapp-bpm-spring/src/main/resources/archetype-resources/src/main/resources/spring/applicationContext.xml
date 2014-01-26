@@ -14,12 +14,21 @@
 
   <context:annotation-config />
 
+  <context:component-scan base-package='${package}' />
+
   <!-- Enable handling of java.util.logging through SLF4J -->
   <bean id="slf4JBridgeHandler" class="org.slf4j.bridge.SLF4JBridgeHandler" init-method="removeHandlersForRootLogger" />
   <bean class="org.slf4j.bridge.SLF4JBridgeHandler" init-method="install" depends-on="slf4JBridgeHandler" />
 
-  <bean class="${package}.bpm.Starter" />
-  <bean id="sampleServiceTaskDelegate" class="${package}.bpm.task.SampleServiceTaskDelegate" />
+  <!-- Camunda BPM Listener Beans -->
+  <bean id="processInstanceStartedListener" class="${package}.bpm.listener.common.ProcessInstanceStartedListener" />
+  <bean id="processInstanceEndedListener" class="${package}.bpm.listener.common.ProcessInstanceEndedListener" />
+
+  <!-- Camunda BPM Service Task Beans -->
+  <bean id="hotelBookingDelegate" class="${package}.bpm.task.travel.HotelBookingDelegate" />
+  <bean id="flightBookingDelegate" class="${package}.bpm.task.travel.FlightBookingDelegate" />
+  <bean id="carBookingDelegate" class="${package}.bpm.task.travel.CarBookingDelegate" />
+  <bean id="bookingNotificationDelegate" class="${package}.bpm.task.travel.SendBookingNotificationDelegate" />
 
   <jpa:repositories base-package="${package}" />
 
@@ -46,34 +55,52 @@
     <property name="entityManagerFactory" ref="entityManagerFactory" />
   </bean>
 
-  <bean id="processEngineConfiguration" class="org.camunda.bpm.engine.spring.SpringProcessEngineConfiguration">
-    <property name="processEngineName" value="default" />
-    <property name="dataSource" ref="dataSource" />
-    <property name="transactionManager" ref="transactionManager" />
-    <property name="databaseSchemaUpdate" value="${processengine.configuration.databaseSchemaUpdate}" />
-    <property name="jobExecutorActivate" value="${processengine.configuration.jobExecutorActivate}" />
-    <property name="history" value="full" />
-    <property name="deploymentResources" value="classpath*:diagram/*.bpmn" />
-  </bean>
-
   <bean id="processEngine" class="org.camunda.bpm.engine.spring.ProcessEngineFactoryBean">
     <property name="processEngineConfiguration" ref="processEngineConfiguration" />
   </bean>
 
-  <bean id="repositoryService" factory-bean="processEngine" factory-method="getRepositoryService" />
-  <bean id="runtimeService" factory-bean="processEngine" factory-method="getRuntimeService" />
-  <bean id="taskService" factory-bean="processEngine" factory-method="getTaskService" />
-  <bean id="historyService" factory-bean="processEngine" factory-method="getHistoryService" />
-  <bean id="managementService" factory-bean="processEngine" factory-method="getManagementService" />
+  <!-- fix for: https://issues.jboss.org/browse/RESTEASY-810 - create process engine services with static factory method -->
+  <bean id="repositoryService" class="${package}.util.spring.ProcessEngineServiceFactory"
+    factory-method="createRepositoryService">
+    <constructor-arg ref="processEngine" />
+  </bean>
+  <bean id="runtimeService" class="${package}.util.spring.ProcessEngineServiceFactory"
+    factory-method="createRuntimeService">
+    <constructor-arg ref="processEngine" />
+  </bean>
+  <bean id="taskService" class="${package}.util.spring.ProcessEngineServiceFactory"
+    factory-method="createTaskService">
+    <constructor-arg ref="processEngine" />
+  </bean>
+  <bean id="historyService" class="${package}.util.spring.ProcessEngineServiceFactory"
+    factory-method="createHistoryService">
+    <constructor-arg ref="processEngine" />
+  </bean>
+  <bean id="managementService" class="${package}.util.spring.ProcessEngineServiceFactory"
+    factory-method="createManagementService">
+    <constructor-arg ref="processEngine" />
+  </bean>
 
   <beans profile="live">
     <context:property-placeholder location="classpath*:config/application.properties" />
 
     <jee:jndi-lookup id="dataSource" jndi-name="java:comp/env/${datasource.jndiName}" />
+
+    <bean id="processEngineConfiguration" class="org.camunda.bpm.engine.spring.SpringProcessEngineConfiguration">
+      <property name="processEngineName" value="default" />
+      <property name="dataSource" ref="dataSource" />
+      <property name="transactionManager" ref="transactionManager" />
+      <property name="databaseSchemaUpdate" value="${processengine.configuration.databaseSchemaUpdate}" />
+      <property name="jobExecutorActivate" value="${processengine.configuration.jobExecutorActivate}" />
+      <property name="history" value="${processengine.configuration.history}" />
+      <property name="deploymentResources" value="classpath*:diagram/*.bpmn" />
+    </bean>
   </beans>
 
   <beans profile="test">
     <context:property-placeholder location="classpath*:config/application.test.properties" />
+
+    <bean class="${package}.test.starter.SimpleTravelRequestProcessStarter" />
 
     <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
       <property name="driverClassName" value="${datasource.driver}" />
@@ -85,6 +112,16 @@
     <jdbc:initialize-database data-source="dataSource">
       <jdbc:script location="classpath*:sql/camunda-bpm-users.sql" />
     </jdbc:initialize-database>
+
+     <bean id="processEngineConfiguration" class="org.camunda.bpm.engine.spring.SpringProcessEngineConfiguration">
+      <property name="processEngineName" value="default" />
+      <property name="dataSource" ref="dataSource" />
+      <property name="transactionManager" ref="transactionManager" />
+      <property name="databaseSchemaUpdate" value="${processengine.configuration.databaseSchemaUpdate}" />
+      <property name="jobExecutorActivate" value="${processengine.configuration.jobExecutorActivate}" />
+      <property name="history" value="full" />
+      <property name="deploymentResources" value="classpath*:test-diagram/*.bpmn" />
+    </bean>
 
     <bean id="processEngineRule" class="org.camunda.bpm.engine.test.ProcessEngineRule">
       <property name="processEngine" ref="processEngine" />

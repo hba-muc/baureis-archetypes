@@ -7,7 +7,7 @@ Howto install camunda BPM MySQL database
 
 3. Create camunda BPM 7.0.0-Final MySQL database and tables as described here in chapter 1: https://groups.google.com/forum/#!msg/camunda-bpm-users/O8dpppcvwt8/MXFGeGW8wxoJ
 
-4. Insert camunda BPM sample user (required for camunda REST API HTTP Basic Authentication):
+4. Insert camunda BPM sample demo user (required for camunda REST API HTTP Basic Authentication):
 
 -- Groups
 INSERT INTO act_id_group (id_, rev_, name_, type_) VALUES ('accounting', '1', 'Accounting', 'WORKFLOW');
@@ -25,7 +25,7 @@ INSERT INTO act_id_membership (user_id_, group_id_) VALUES ('demo', 'management'
 INSERT INTO act_id_membership (user_id_, group_id_) VALUES ('demo', 'sales');
 
 
-5. Add JNDI resource to Apache Tomcat 7 config/context.xml file:
+5. Add a JNDI resource to Apache Tomcat 7 config/context.xml file:
 
 <Context antiJARLocking="true" antiResourceLocking="true"> 
 

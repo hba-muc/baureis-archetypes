@@ -19,7 +19,6 @@
       <directory>src/main/resources</directory>
       <includes>
         <include>**/*.xml</include>
-        <include>**/*.bpmn</include>
         <include>**/*.properties</include>
         <include>**/*.ProcessEngineProvider</include>
       </includes>
@@ -28,6 +27,7 @@
     <fileSet encoding="UTF-8">
       <directory>src/main/resources</directory>
       <includes>
+        <include>**/*.bpmn</include>
         <include>**/*.png</include>
       </includes>
     </fileSet>
@@ -54,6 +54,14 @@
         <include>**/*.sql</include>
         <include>**/*.xml</include>
         <include>**/*.properties</include>
+      </includes>
+    </fileSet>
+
+    <fileSet encoding="UTF-8">
+      <directory>src/test/resources</directory>
+      <includes>
+        <include>**/*.bpmn</include>
+        <include>**/*.png</include>
       </includes>
     </fileSet>
 

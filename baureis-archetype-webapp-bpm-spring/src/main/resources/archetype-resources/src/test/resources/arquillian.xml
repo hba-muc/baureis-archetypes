@@ -5,6 +5,8 @@
     <configuration>
       <property name="tomcatHome">target/tomcat</property>
       <property name="bindHttpPort">9090</property>
+      <property name="workDir">work</property>
+      <property name="unpackArchive">true</property>
     </configuration>
   </container>
 </arquillian>

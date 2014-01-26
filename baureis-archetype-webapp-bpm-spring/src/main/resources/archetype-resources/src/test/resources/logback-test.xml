@@ -6,8 +6,12 @@
     </encoder>
   </appender>
   
-  <!--logger name="org.camunda" level="DEBUG" /-->
-	
+    <!-- <logger name="org.camunda" level="DEBUG" /> -->
+    <!-- <logger name="org.hibernate" level="DEBUG" /> -->
+    <!-- <logger name="org.springframework" level="DEBUG" /> -->
+    <!-- <logger name="org.h2" level="DEBUG" /> -->
+    <!-- <logger name="org.jboss.resteasy" level="DEBUG" /> -->
+
   <!-- root logger setup -->
   <root level="INFO">
     <appender-ref ref="${artifactId}-test-appender" />

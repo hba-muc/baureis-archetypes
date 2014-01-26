@@ -1,4 +1,4 @@
-package ${package}.rest;
+package ${package}.rest.camunda;
 
 import java.util.Set;
 

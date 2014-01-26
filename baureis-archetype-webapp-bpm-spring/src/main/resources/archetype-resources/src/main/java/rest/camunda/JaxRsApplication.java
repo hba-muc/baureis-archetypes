@@ -1,4 +1,4 @@
-package ${package}.rest;
+package ${package}.rest.camunda;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -12,7 +12,9 @@ public class JaxRsApplication extends Application {
     @Override
     public Set<Class<?>> getClasses() {
         Set<Class<?>> classes = new HashSet<Class<?>>();
+
         // add your own classes
+        classes.add(${package}.rest.resource.TravelRequestResource.class);
 
         // add camunda engine rest classes that you need
         classes.add(org.camunda.bpm.engine.rest.impl.ProcessEngineRestServiceImpl.class);
@@ -28,6 +30,7 @@ public class JaxRsApplication extends Application {
         classes.add(org.camunda.bpm.engine.rest.impl.GroupRestServiceImpl.class);
         classes.add(org.camunda.bpm.engine.rest.impl.AuthorizationRestServiceImpl.class);
         classes.add(org.camunda.bpm.engine.rest.impl.history.HistoryRestServiceImpl.class);
+
         // mandatory
         classes.add(org.camunda.bpm.engine.rest.mapper.JacksonConfigurator.class);
         classes.add(org.codehaus.jackson.jaxrs.JacksonJsonProvider.class);
@@ -36,6 +39,7 @@ public class JaxRsApplication extends Application {
 
         classes.add(org.camunda.bpm.engine.rest.exception.RestExceptionHandler.class);
         classes.add(org.camunda.bpm.engine.rest.exception.ProcessEngineExceptionHandler.class);
+
         return classes;
     }
 }

@@ -1,1 +1,1 @@
-${package}.rest.RestProcessEngineProvider
+${package}.rest.camunda.RestProcessEngineProvider

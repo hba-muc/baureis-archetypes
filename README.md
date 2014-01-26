@@ -2,18 +2,26 @@
 
 Archetypes for Baureis sample applications.
 
-
 ## Local archetype installation
 
-**mvn install**
+1. Download and unzip this project from GitHub. 
+2. Install the archetypes to your local system:
 
+```cmd
+cd baureis-archetypes
+mvn clean install
+```
 
-## Create new project from command line
+## Create a new project from command line
 
-On your command line, execute: **mvn archetype:generate -DarchetypeCatalog=local**
+Run 
 
+```cmd
+mvn archetype:generate -DarchetypeCatalog=local
+```
 
-## Create new project using Eclipse
+on your command line and select an archetype.
+
+## Create a new project using Eclipse
 
 Create Maven project from archetype: **File -> New -> Maven -> Maven Project**
-
